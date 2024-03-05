@@ -209,9 +209,23 @@ function Prepend-EnvPathIfExists([String]$path) { if (Test-Path $path) { Prepend
 function Append-EnvPath([String]$path) { $env:PATH = $env:PATH + ";$path" }
 function Append-EnvPathIfExists([String]$path) { if (Test-Path $path) { Append-EnvPath $path } }
 
+Function InvokeWithDir {
+$env:FZF_CTRL_T_COMMAND='fd -H -t d'
+Invoke-FuzzySetLocation -Directory ~ 
 
+}
+function fzfWithBatPreview{fzf --preview='bat --color=always --style=numbers {}' --bind shift-up:preview-up,shift-down:preview-down}
 ### Utilities
 ### ----------------------------
+
+function dotgitsetup
+{ git --git-dir=$HOME/dotfiles/ --work-tree=$HOME @args
+}
+Set-Alias -Name dotgit -Value dotgitsetup
+dotgit config --local status.showUntrackedFiles no
+oh-my-posh init pwsh --config "$env:POSH_THEMES_PATH/di4am0nd.omp.json" | Invoke-Expression
+
+
 
 # Convert a number to a disk size (12.4K or 5M)
 function Convert-ToDiskSize {

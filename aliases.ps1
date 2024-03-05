@@ -8,7 +8,7 @@ ${function:.....} = { Set-Location ..\..\..\.. }
 ${function:......} = { Set-Location ..\..\..\..\.. }
 
 # Navigation Shortcuts
-${function:drop} = { Set-Location ~\Documents\Dropbox }
+#${function:drop} = { Set-Location ~\Documents\Dropbox }
 ${function:dt} = { Set-Location ~\Desktop }
 ${function:docs} = { Set-Location ~\Documents }
 ${function:dl} = { Set-Location ~\Downloads }
@@ -23,16 +23,16 @@ if (Get-Command wget.exe -ErrorAction SilentlyContinue | Test-Path) {
 }
 
 # Directory Listing: Use `ls.exe` if available
-if (Get-Command ls.exe -ErrorAction SilentlyContinue | Test-Path) {
+if (Get-Command fd.exe -ErrorAction SilentlyContinue | Test-Path) {
     rm alias:ls -ErrorAction SilentlyContinue
     # Set `ls` to call `ls.exe` and always use --color
-    ${function:ls} = { ls.exe --color @args }
+    ${function:ls} = { fd.exe --color @args }
     # List all files in long format
-    ${function:l} = { ls -lF @args }
+    ${function:l} = { fd.exe -p @args }
     # List all files in long format, including hidden files
-    ${function:la} = { ls -laF @args }
+    ${function:la} = { fd -p -H -laF @args }
     # List only directories
-    ${function:lsd} = { Get-ChildItem -Directory -Force @args }
+    ${function:lsd} = { fd -t d @args }
 } else {
     # List all files, including hidden files
     ${function:la} = { ls -Force @args }
@@ -51,6 +51,12 @@ if (Get-Command curl.exe -ErrorAction SilentlyContinue | Test-Path) {
     # Gzip-enabled `curl`
     ${function:gurl} = { curl -TransferEncoding GZip }
 }
+
+# fzfwith only directories
+Set-Alias -Name fdir -Value InvokeWithDir
+
+#fzf search with bat preview
+Set-Alias -Name fzfpr -Value fzfWithBatPreview
 
 # Create a new directory and enter it
 Set-Alias mkd CreateAndSet-Directory
