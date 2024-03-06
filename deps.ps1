@@ -23,8 +23,9 @@ Get-PackageProvider NuGet -Force | Out-Null
 Write-Host "Installing PowerShell Modules..." -ForegroundColor "Yellow"
 Install-Module Posh-Git -Scope CurrentUser -Force
 Install-Module PSWindowsUpdate -Scope CurrentUser -Force
+#Install-Module -Name PSGitDotfiles -force
 #Install-Module -Name PSReadLine -RequiredVersion 2.2.6
-Install-Module -Name PSFzf -RequiredVersion 2.5.22
+Install-Module -Name PSFzf -force 
 
 # system and cli
 #winget install Microsoft.WebPICmd                        --silent --accept-package-agreements

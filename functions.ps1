@@ -3,59 +3,59 @@ function which($name) { Get-Command $name -ErrorAction SilentlyContinue | Select
 function touch($file) { "" | Out-File $file -Encoding ASCII }
 
 # Common Editing needs
-function Edit-Hosts { Invoke-Expression "sudo $(if($env:EDITOR -ne $null)  {$env:EDITOR } else { 'notepad' }) $env:windir\system32\drivers\etc\hosts" }
-function Edit-Profile { Invoke-Expression "$(if($env:EDITOR -ne $null)  {$env:EDITOR } else { 'notepad' }) $profile" }
+function Edit-Hosts { Invoke-Expression "sudo $(if($null -ne $env:EDITOR)  {$env:EDITOR } else { 'notepad' }) $env:windir\system32\drivers\etc\hosts" }
+function Edit-Profile { Invoke-Expression "$(if($null -ne $env:EDITOR)  {$env:EDITOR } else { 'notepad' }) $profile" }
 
 # Sudo
 function sudo() {
-    if ($args.Length -eq 1) {
-        start-process $args[0] -verb "runAs"
-    }
-    if ($args.Length -gt 1) {
-        start-process $args[0] -ArgumentList $args[1..$args.Length] -verb "runAs"
-    }
+	if ($args.Length -eq 1) {
+		start-process $args[0] -verb "runAs"
+	}
+	if ($args.Length -gt 1) {
+		start-process $args[0] -ArgumentList $args[1..$args.Length] -verb "runAs"
+	}
 }
 
 # System Update - Update RubyGems, NPM, and their installed packages
 function System-Update() {
-    Install-WindowsUpdate -IgnoreUserInput -IgnoreReboot -AcceptAll
-    Update-Module
-    Update-Help -Force
-    gem update --system
-    gem update
-    npm install npm -g
-    npm update -g
+	Install-WindowsUpdate -IgnoreUserInput -IgnoreReboot -AcceptAll
+	Update-Module
+	Update-Help -Force
+	gem update --system
+	gem update
+	npm install npm -g
+	npm update -g
 }
 
 # Reload the Shell
 function Reload-Powershell {
-    $newProcess = new-object System.Diagnostics.ProcessStartInfo "PowerShell";
-    $newProcess.Arguments = "-nologo";
-    [System.Diagnostics.Process]::Start($newProcess);
-    exit
+	$newProcess = new-object System.Diagnostics.ProcessStartInfo "PowerShell";
+	$newProcess.Arguments = "-nologo";
+	[System.Diagnostics.Process]::Start($newProcess);
+	exit
 }
 
 # Download a file into a temporary folder
 function curlex($url) {
-    $uri = new-object system.uri $url
-    $filename = $name = $uri.segments | Select-Object -Last 1
-    $path = join-path $env:Temp $filename
-    if( test-path $path ) { rm -force $path }
+	$uri = new-object system.uri $url
+	$filename = $uri.segments | Select-Object -Last 1
+	$path = join-path $env:Temp $filename
+	if ( test-path $path ) { Remove-Item -force $path }
 
     (new-object net.webclient).DownloadFile($url, $path)
 
-    return new-object io.fileinfo $path
+	return new-object io.fileinfo $path
 }
 
 # Empty the Recycle Bin on all drives
 function Empty-RecycleBin {
-    $RecBin = (New-Object -ComObject Shell.Application).Namespace(0xA)
-    $RecBin.Items() | %{Remove-Item $_.Path -Recurse -Confirm:$false}
+	$RecBin = (New-Object -ComObject Shell.Application).Namespace(0xA)
+	$RecBin.Items() | ForEach-Object { Remove-Item $_.Path -Recurse -Confirm:$false }
 }
 
 # Sound Volume
 function Get-SoundVolume {
-  <#
+	<#
   .SYNOPSIS
   Get audio output volume.
 
@@ -74,10 +74,10 @@ function Get-SoundVolume {
   .LINK
   https://github.com/jayharris/dotfiles-windows/
   #>
-  [math]::Round([Audio]::Volume * 100)
+	[math]::Round([Audio]::Volume * 100)
 }
-function Set-SoundVolume([Parameter(mandatory=$true)][Int32] $Volume) {
-  <#
+function Set-SoundVolume([Parameter(mandatory = $true)][Int32] $Volume) {
+	<#
   .SYNOPSIS
   Set audio output volume.
 
@@ -107,10 +107,10 @@ function Set-SoundVolume([Parameter(mandatory=$true)][Int32] $Volume) {
   .LINK
   https://github.com/jayharris/dotfiles-windows/
   #>
-  [Audio]::Volume = ($Volume / 100)
+	[Audio]::Volume = ($Volume / 100)
 }
 function Set-SoundMute {
-  <#
+	<#
   .SYNOPSIS
   Mote audio output.
 
@@ -129,10 +129,10 @@ function Set-SoundMute {
   .LINK
   https://github.com/jayharris/dotfiles-windows/
   #>
-   [Audio]::Mute = $true
+	[Audio]::Mute = $true
 }
 function Set-SoundUnmute {
-  <#
+	<#
   .SYNOPSIS
   Unmote audio output.
 
@@ -151,28 +151,28 @@ function Set-SoundUnmute {
   .LINK
   https://github.com/jayharris/dotfiles-windows/
   #>
-   [Audio]::Mute = $false
+	[Audio]::Mute = $false
 }
 
 
 ### File System functions
 ### ----------------------------
 # Create a new directory and enter it
-function CreateAndSet-Directory([String] $path) { New-Item $path -ItemType Directory -ErrorAction SilentlyContinue; Set-Location $path}
+function CreateAndSet-Directory([String] $path) { New-Item $path -ItemType Directory -ErrorAction SilentlyContinue; Set-Location $path }
 
 # Determine size of a file or total size of a directory
-function Get-DiskUsage([string] $path=(Get-Location).Path) {
-    Convert-ToDiskSize `
-        ( `
-            Get-ChildItem .\ -recurse -ErrorAction SilentlyContinue `
-            | Measure-Object -property length -sum -ErrorAction SilentlyContinue
-        ).Sum `
-        1
+function Get-DiskUsage([string] $path = (Get-Location).Path) {
+	Convert-ToDiskSize `
+	( `
+			Get-ChildItem .\ -recurse -ErrorAction SilentlyContinue `
+		| Measure-Object -property length -sum -ErrorAction SilentlyContinue
+	).Sum `
+		1
 }
 
 # Cleanup all disks (Based on Registry Settings in `windows.ps1`)
 function Clean-Disks {
-    Start-Process "$(Join-Path $env:WinDir 'system32\cleanmgr.exe')" -ArgumentList "/sagerun:6174" -Verb "runAs"
+	Start-Process "$(Join-Path $env:WinDir 'system32\cleanmgr.exe')" -ArgumentList "/sagerun:6174" -Verb "runAs"
 }
 
 ### Environment functions
@@ -180,27 +180,27 @@ function Clean-Disks {
 
 # Reload the $env object from the registry
 function Refresh-Environment {
-    $locations = 'HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Environment',
-                 'HKCU:\Environment'
+	$locations = 'HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Environment',
+	'HKCU:\Environment'
 
-    $locations | ForEach-Object {
-        $k = Get-Item $_
-        $k.GetValueNames() | ForEach-Object {
-            $name  = $_
-            $value = $k.GetValue($_)
-            Set-Item -Path Env:\$name -Value $value
-        }
-    }
+	$locations | ForEach-Object {
+		$k = Get-Item $_
+		$k.GetValueNames() | ForEach-Object {
+			$name = $_
+			$value = $k.GetValue($_)
+			Set-Item -Path Env:\$name -Value $value
+		}
+	}
 
-    $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
+	$env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
 }
 
 # Set a permanent Environment variable, and reload it into $env
 function Set-Environment([String] $variable, [String] $value) {
-    Set-ItemProperty "HKCU:\Environment" $variable $value
-    # Manually setting Registry entry. SetEnvironmentVariable is too slow because of blocking HWND_BROADCAST
-    #[System.Environment]::SetEnvironmentVariable("$variable", "$value","User")
-    Invoke-Expression "`$env:${variable} = `"$value`""
+	Set-ItemProperty "HKCU:\Environment" $variable $value
+	# Manually setting Registry entry. SetEnvironmentVariable is too slow because of blocking HWND_BROADCAST
+	#[System.Environment]::SetEnvironmentVariable("$variable", "$value","User")
+	Invoke-Expression "`$env:${variable} = `"$value`""
 }
 
 # Add a folder to $env:Path
@@ -210,54 +210,81 @@ function Append-EnvPath([String]$path) { $env:PATH = $env:PATH + ";$path" }
 function Append-EnvPathIfExists([String]$path) { if (Test-Path $path) { Append-EnvPath $path } }
 
 Function InvokeWithDir {
-$env:FZF_CTRL_T_COMMAND='fd -H -t d'
-Invoke-FuzzySetLocation -Directory ~ 
+	$env:FZF_CTRL_T_COMMAND = 'fd -H -t d'
+	Invoke-FuzzySetLocation -Directory ~ 
 
 }
-function fzfWithBatPreview{fzf --preview='bat --color=always --style=numbers {}' --bind shift-up:preview-up,shift-down:preview-down}
+function fzfWithBatPreview { fzf --preview='bat --color=always --style=numbers {}' --bind shift-up:preview-up, shift-down:preview-down }
 ### Utilities
 ### ----------------------------
+###     setting up dotfiles for git
+### https://www.bowmanjd.com/dotfiles/dotfiles-2-bare-repo/
+$DOTFILES = "$HOME\.dotfiles"
 
-function dotgitsetup
-{ git --git-dir=$HOME/dotfiles/ --work-tree=$HOME @args
+function dtf {
+	git --git-dir="$DOTFILES" --work-tree="$HOME" @Args
 }
-Set-Alias -Name dotgit -Value dotgitsetup
-dotgit config --local status.showUntrackedFiles no
+
+function dtfnew {
+	Param ([string]$repo)
+	git clone --bare $repo $DOTFILES
+	dtf config --local status.showUntrackedFiles no
+	dtf switch -c base
+
+	Write-Output "Please add and commit additional files"
+	Write-Output "using 'dtf add' and 'dtf commit', then run"
+	Write-Output "dtf push -u origin base"
+}
+
+function dtfrestore {
+	Param ([string]$repo)
+	git clone -b base --bare $repo $DOTFILES
+	dtf config --local status.showUntrackedFiles no
+	dtf checkout
+	if ($LASTEXITCODE) {
+		Write-Output "Deal with conflicting files, then run (possibly with -f flag if you are OK with overwriting)"
+		Write-Output "dtf checkout"
+	}
+}
+
+
+### ----------------------------
 oh-my-posh init pwsh --config "$env:POSH_THEMES_PATH/di4am0nd.omp.json" | Invoke-Expression
 
 
 
 # Convert a number to a disk size (12.4K or 5M)
 function Convert-ToDiskSize {
-    param ( $bytes, $precision='0' )
-    foreach ($size in ("B","K","M","G","T")) {
-        if (($bytes -lt 1000) -or ($size -eq "T")){
-            $bytes = ($bytes).tostring("F0" + "$precision")
-            return "${bytes}${size}"
-        }
-        else { $bytes /= 1KB }
-    }
+	param ( $bytes, $precision = '0' )
+	foreach ($size in ("B", "K", "M", "G", "T")) {
+		if (($bytes -lt 1000) -or ($size -eq "T")) {
+			$bytes = ($bytes).tostring("F0" + "$precision")
+			return "${bytes}${size}"
+		}
+		else { $bytes /= 1KB }
+	}
 }
 
 # Start IIS Express Server with an optional path and port
 function Start-IISExpress {
-    [CmdletBinding()]
-    param (
-        [String] $path = (Get-Location).Path,
-        [Int32]  $port = 3000
-    )
+	[CmdletBinding()]
+	param (
+		[String] $path = (Get-Location).Path,
+		[Int32]  $port = 3000
+	)
 
-    if ((Test-Path "${env:ProgramFiles}\IIS Express\iisexpress.exe") -or (Test-Path "${env:ProgramFiles(x86)}\IIS Express\iisexpress.exe")) {
-        $iisExpress = Resolve-Path "${env:ProgramFiles}\IIS Express\iisexpress.exe" -ErrorAction SilentlyContinue
-        if ($iisExpress -eq $null) { $iisExpress = Get-Item "${env:ProgramFiles(x86)}\IIS Express\iisexpress.exe" }
+	if ((Test-Path "${env:ProgramFiles}\IIS Express\iisexpress.exe") -or (Test-Path "${env:ProgramFiles(x86)}\IIS Express\iisexpress.exe")) {
+		$iisExpress = Resolve-Path "${env:ProgramFiles}\IIS Express\iisexpress.exe" -ErrorAction SilentlyContinue
+		if ($null -eq $iisExpress) { $iisExpress = Get-Item "${env:ProgramFiles(x86)}\IIS Express\iisexpress.exe" }
 
-        & $iisExpress @("/path:${path}") /port:$port
-    } else { Write-Warning "Unable to find iisexpress.exe"}
+		& $iisExpress @("/path:${path}") /port:$port
+	}
+ else { Write-Warning "Unable to find iisexpress.exe" }
 }
 
 # Extract a .zip file
 function Unzip-File {
-    <#
+	<#
     .SYNOPSIS
        Extracts the contents of a zip file.
 
@@ -294,34 +321,37 @@ function Unzip-File {
 
        This function first checks to see if the .NET Framework 4.5 is installed and uses it for the unzipping process, otherwise COM is used.
     #>
-    [CmdletBinding()]
-    param (
-        [Parameter(Mandatory=$true, ValueFromPipeline=$true)]
-        [string]$File,
+	[CmdletBinding()]
+	param (
+		[Parameter(Mandatory = $true, ValueFromPipeline = $true)]
+		[string]$File,
 
-        [ValidateNotNullOrEmpty()]
-        [string]$Destination = (Get-Location).Path
-    )
+		[ValidateNotNullOrEmpty()]
+		[string]$Destination = (Get-Location).Path
+	)
 
-    $filePath = Resolve-Path $File
-    $destinationPath = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($Destination)
+	$filePath = Resolve-Path $File
+	$destinationPath = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($Destination)
 
-    if (($PSVersionTable.PSVersion.Major -ge 3) -and
+	if (($PSVersionTable.PSVersion.Major -ge 3) -and
        ((Get-ItemProperty -Path "HKLM:\Software\Microsoft\NET Framework Setup\NDP\v4\Full" -ErrorAction SilentlyContinue).Version -like "4.5*" -or
        (Get-ItemProperty -Path "HKLM:\Software\Microsoft\NET Framework Setup\NDP\v4\Client" -ErrorAction SilentlyContinue).Version -like "4.5*")) {
 
-        try {
-            [System.Reflection.Assembly]::LoadWithPartialName("System.IO.Compression.FileSystem") | Out-Null
-            [System.IO.Compression.ZipFile]::ExtractToDirectory("$filePath", "$destinationPath")
-        } catch {
-            Write-Warning -Message "Unexpected Error. Error details: $_.Exception.Message"
-        }
-    } else {
-        try {
-            $shell = New-Object -ComObject Shell.Application
-            $shell.Namespace($destinationPath).copyhere(($shell.NameSpace($filePath)).items())
-        } catch {
-            Write-Warning -Message "Unexpected Error. Error details: $_.Exception.Message"
-        }
-    }
+		try {
+			[System.Reflection.Assembly]::LoadWithPartialName("System.IO.Compression.FileSystem") | Out-Null
+			[System.IO.Compression.ZipFile]::ExtractToDirectory("$filePath", "$destinationPath")
+		}
+		catch {
+			Write-Warning -Message "Unexpected Error. Error details: $_.Exception.Message"
+		}
+	}
+ else {
+		try {
+			$shell = New-Object -ComObject Shell.Application
+			$shell.Namespace($destinationPath).copyhere(($shell.NameSpace($filePath)).items())
+		}
+		catch {
+			Write-Warning -Message "Unexpected Error. Error details: $_.Exception.Message"
+		}
+	}
 }
