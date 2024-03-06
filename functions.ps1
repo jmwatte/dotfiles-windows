@@ -17,15 +17,16 @@ function sudo() {
 }
 
 # System Update - Update RubyGems, NPM, and their installed packages
-function System-Update() {
+ function System-Update() {
 	Install-WindowsUpdate -IgnoreUserInput -IgnoreReboot -AcceptAll
 	Update-Module
 	Update-Help -Force
-	gem update --system
-	gem update
-	npm install npm -g
-	npm update -g
-}
+	Scoop update
+#	gem update --system
+#	gem update
+#	npm install npm -g
+#	npm update -g
+} 
 
 # Reload the Shell
 function Reload-Powershell {
@@ -52,6 +53,7 @@ function Empty-RecycleBin {
 	$RecBin = (New-Object -ComObject Shell.Application).Namespace(0xA)
 	$RecBin.Items() | ForEach-Object { Remove-Item $_.Path -Recurse -Confirm:$false }
 }
+
 
 # Sound Volume
 function Get-SoundVolume {
@@ -214,7 +216,32 @@ Function InvokeWithDir {
 	Invoke-FuzzySetLocation -Directory ~ 
 
 }
-function fzfWithBatPreview { fzf --preview='bat --color=always --style=numbers {}' --bind shift-up:preview-up, shift-down:preview-down }
+function fzfWithBatPreview { fzf --preview='bat --color=always --style=numbers {}'} 
+#Set-Alias -Name fzfpr -Value fzfWithBatPreview
+
+function toggleFind{
+	fd . | fzf --prompt='All> ' --header='CTRL-D: Directories /CTRL-F: Files' --bind='ctrl-d:change-prompt(Directories> )+reload(fd . -td)' --bind='ctrl-f:change-prompt(Files> )+reload(fd . -tf)'
+}
+
+#does not work
+function togWithPrev{
+fd  -tf -H | fzf --prompt='Files> ' --header='CTRL-T: switch between Files/Directories' --bind='ctrl-t:transform:[[ ! $FZF_PROMPT =~ Files> ]] && echo "change-prompt(Files> )+reload(fd  -tf -H)" || echo "change-prompt(Directories> )+reload(fd  -td -H)"' --preview='[[ $FZF_PROMPT =~ Files> ]] && bat --color=always {} || tree {}'	
+}
+#Set-Alias fwp togWithPrev
+
+
+
+
+
+
+
+
+function FindFile
+{
+  Get-ChildItem . -Recurse -Attributes !Directory | Invoke-Fzf | % { hx.exe  $_ }
+}
+#Set-Alias fe FindFile
+
 ### Utilities
 ### ----------------------------
 ###     setting up dotfiles for git

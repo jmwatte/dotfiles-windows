@@ -26,6 +26,7 @@ Install-Module PSWindowsUpdate -Scope CurrentUser -Force
 #Install-Module -Name PSGitDotfiles -force
 #Install-Module -Name PSReadLine -RequiredVersion 2.2.6
 Install-Module -Name PSFzf -force 
+Install-Module -Name Spotishell -force
 
 # system and cli
 #winget install Microsoft.WebPICmd                        --silent --accept-package-agreements
