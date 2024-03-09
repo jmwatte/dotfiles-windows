@@ -230,8 +230,13 @@ fd  -tf -H | fzf --prompt='Files> ' --header='CTRL-T: switch between Files/Direc
 #Set-Alias fwp togWithPrev
 
 
-
-
+function findInFile($type){
+#$type? $t="--type=$type":$t=''
+if($null -eq $type){ $q="--type=all"}else{$q="--type=$type"}
+	rg $q --color=always --line-number --no-heading --smart-case "${*:-}" | fzf --ansi --color "hl:-1:underline,hl+:-1:underline:reverse" --delimiter : --preview 'bat --color=always {1} --highlight-line {2}' --preview-window 'up,50%,border-bottom,+{2}+3/3,~3' --bind 'enter:execute:hx.exe {1}:{2}'
+	
+}
+Set-Alias fif findInFile
 
 
 
