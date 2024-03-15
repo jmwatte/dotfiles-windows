@@ -62,7 +62,7 @@ winget install Microsoft.PowerShell                      --silent --accept-packa
 winget install  Helix.Helix				  --silent --accept-package-agreements
 
 winget install qBittorrent.qBittorrent			  --silent --accept-package-agreements
-winget install voidtools.Everything		          --silent --accept-package-agreements
+winget install voidtools.Everything.Alpha		          --silent --accept-package-agreements
 winget install MKVToolNix				--silent --accept-package-agreements
 winget install Google.AndroidStudio    --silent --accept-package-agreements
 winget install Microsoft.OpenJDK.21    --silent --accept-package-agreements
