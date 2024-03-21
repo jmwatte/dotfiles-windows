@@ -23,7 +23,7 @@ winget install Microsoft.PowerToys -s winget
 
 ### Install PowerShell Modules
 Write-Host "Installing PowerShell Modules..." -ForegroundColor "Yellow"
-winget install JanDeDobbeleer.OhMyPosh -s winget
+winget install JanDeDobbeleer.OhMyPosh --silent --accept-package-agreements
 Install-Module Posh-Git -Scope CurrentUser -Force
 Install-Module PSWindowsUpdate -Scope CurrentUser -Force
 #Install-Module -Name PSGitDotfiles -force
