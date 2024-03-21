@@ -28,6 +28,9 @@ Install-Module PSWindowsUpdate -Scope CurrentUser -Force
 Install-Module -Name PSFzf -force 
 Install-Module -Name Spotishell -force
 Install-Module -Name InstallModuleFromGitHub -force
+Install-Module PSEverything
+
+
 
 # system and cli
 #winget install Microsoft.WebPICmd                        --silent --accept-package-agreements
@@ -35,12 +38,15 @@ winget install Git.Git                                   --silent --accept-packa
 #winget install OpenJS.NodeJS                             --silent --accept-package-agreements
 winget install Python.Python.3                           --silent --accept-package-agreements
 #winget install RubyInstallerTeam.Ruby                    --silent --accept-package-agreements
+ 
 
-# browsers
+winget install JanDeDobbeleer.OhMyPosh --silent --accept-package-agreements
+winget install codesector.teracopy --silent --accept-package-agreements
+# browsers              --silent --accept-package-agreements
 #winget install Google.Chrome                             --silent --accept-package-agreements
 #winget install Mozilla.Firefox                           --silent --accept-package-agreements
 #winget install Opera.Opera                               --silent --accept-package-agreements
-winget install Brave Beta				  --silent --accept-package-agreements
+winget install 	Brave.Brave.Beta			  --silent --accept-package-agreements
 Write-Host -ForegroundColor Yellow "🌋 Force reinstall of VS-Code to ensure Path and Shell integration"
 winget install --force Microsoft.VisualStudioCode --override '/VERYSILENT /SP- /MERGETASKS="!runcode,!desktopicon,addcontextmenufiles,addcontextmenufolders,associatewithfiles,addtopath"'
 
@@ -64,13 +70,48 @@ winget install  Helix.Helix				  --silent --accept-package-agreements
 winget install qBittorrent.qBittorrent			  --silent --accept-package-agreements
 winget install voidtools.Everything.Alpha		          --silent --accept-package-agreements
 winget install MKVToolNix				--silent --accept-package-agreements
-winget install Google.AndroidStudio    --silent --accept-package-agreements
+winget install Googl.AndroidStudio    --silent --accept-package-agreements
 winget install Microsoft.OpenJDK.21    --silent --accept-package-agreements
 winget install sharkdp.bat
 winget install sharkdp.fd
+winget install  Nilesoft.Shell --silent --accept-package-agreements
+winget install XBMCFoundation.Kodi --silent --accept-package-agreements
+winget install Gyan.FFmpeg --silent --accept-package-agreements
+
+$FontName = 'meslo'
+$NerdFontsURI = 'https://github.com/ryanoasis/nerd-fonts/releases'
+
+$WebResponse = Invoke-WebRequest -Uri "$NerdFontsURI/latest" -MaximumRedirection 0 -ErrorAction SilentlyContinue
+
+$LatestVersion = Split-Path -Path $WebResponse.Headers['Location'] -Leaf
+
+Invoke-WebRequest -Uri "$NerdFontsURI/download/$LatestVersion/$FontName.zip" -OutFile "$FontName.zip"
+
+Expand-Archive -Path "$FontName.zip"
+
+$ShellApplication = New-Object -ComObject shell.application
+$Fonts = $ShellApplication.NameSpace(0x14)
+
+Get-ChildItem -Path ".\$FontName" -Include '*.ttf' -Recurse | ForEach-Object -Process {
+    $Fonts.CopyHere($_.FullName)
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 Refresh-Environment
 
-gem pristine --all --env-shebang
+#gem pristine --all --env-shebang
 
 ### Node Packages
 #Write-Host "Installing Node Packages..." -ForegroundColor "Yellow"

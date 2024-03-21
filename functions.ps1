@@ -216,31 +216,65 @@ Function InvokeWithDir {
 	Invoke-FuzzySetLocation -Directory ~ 
 
 }
-function fzfWithBatPreview { fzf --preview='bat --color=always --style=numbers {}'} 
+#function fzfWithBatPreview { fzf --preview='bat --color=always --style=numbers {}'} 
 #Set-Alias -Name fzfpr -Value fzfWithBatPreview
 
-function toggleFind{
-	fd . | fzf --prompt='All> ' --header='CTRL-D: Directories /CTRL-F: Files' --bind='ctrl-d:change-prompt(Directories> )+reload(fd . -td)' --bind='ctrl-f:change-prompt(Files> )+reload(fd . -tf)'
-}
+# function toggleFind{
+# 	fd . | fzf --prompt='All> ' --header='CTRL-D: Directories /CTRL-F: Files' --bind='ctrl-d:change-prompt(Directories> )+reload(fd . -td)' --bind='ctrl-f:change-prompt(Files> )+reload(fd . -tf)'
+# }
 
 #does not work
-function togWithPrev{
-fd  -tf -H | fzf --prompt='Files> ' --header='CTRL-T: switch between Files/Directories' --bind='ctrl-t:transform:[[ ! $FZF_PROMPT =~ Files> ]] && echo "change-prompt(Files> )+reload(fd  -tf -H)" || echo "change-prompt(Directories> )+reload(fd  -td -H)"' --preview='[[ $FZF_PROMPT =~ Files> ]] && bat --color=always {} || tree {}'	
-}
+# function togWithPrev{
+# fd  -tf -H | fzf --prompt='Files> ' --header='CTRL-T: switch between Files/Directories' --bind='ctrl-t:transform:[[ ! $FZF_PROMPT =~ Files> ]] && echo "change-prompt(Files> )+reload(fd  -tf -H)" || echo "change-prompt(Directories> )+reload(fd  -td -H)"' --preview='[[ $FZF_PROMPT =~ Files> ]] && bat --color=always {} || tree {}'	
+# }
 #Set-Alias fwp togWithPrev
 
 
-function findInFile($type){
-#$type? $t="--type=$type":$t=''
-if($null -eq $type){ $q="--type=all"}else{$q="--type=$type"}
-	rg $q --color=always --line-number --no-heading --smart-case "${*:-}" | fzf --ansi --color "hl:-1:underline,hl+:-1:underline:reverse" --delimiter : --preview 'bat --color=always {1} --highlight-line {2}' --preview-window 'up,50%,border-bottom,+{2}+3/3,~3' --bind 'enter:execute:hx.exe {1}:{2}'
+# function findInFile($type){
+# #$type? $t="--type=$type":$t=''
+# if($null -eq $type){ $q="--type=all"}else{$q="--type=$type"}
+# 	rg $q --color=always --line-number --no-heading --smart-case "${*:-}" | fzf --ansi --color "hl:-1:underline,hl+:-1:underline:reverse" --delimiter : --preview 'bat --color=always {1} --highlight-line {2}' --preview-window 'up,50%,border-bottom,+{2}+3/3,~3' --bind 'enter:execute:hx.exe {1}:{2}'
 	
-}
-Set-Alias fif findInFile
+# }
+# Set-Alias fif findInFile
 
 
+# function hxs() {
+# 	RG_PREFIX="rg -i --files-with-matches"
+# 	local files
+# 	files="$(
+# 		FZF_DEFAULT_COMMAND_DEFAULT_COMMAND="$RG_PREFIX '$1'" \
+# 			fzf --multi 3 --print0 --sort --preview="[[ ! -z {} ]] && rg --pretty --ignore-case --context 5 {q} {}" \
+# 				--phony -i -q "$1" \
+# 				--bind "change:reload:$RG_PREFIX {q}" \
+# 				--preview-window="70%:wrap" \
+# 				--bind 'ctrl-a:select-all'
+# 	)"
+# 	[[ "$files" ]] && hx --vsplit $(echo $files | tr \\0 " ")
+# }
+# function Invoke-Hxs {
+#     param (
+#         [string]$SearchPattern
+#     )
+
+#     $RG_PREFIX = "rg -i --files-with-matches"
+#     $FZF_DEFAULT_COMMAND = "$RG_PREFIX '$SearchPattern'"
+#     $files = fzf --multi 3 --print0 --sort --preview="if (-not [string]::IsNullOrEmpty(`"{}`")) { rg --pretty --ignore-case --context 5 `"$SearchPattern`" `"{}`" }" `
+#                 --phony -i -q "$SearchPattern" `
+#                 --bind "change:reload:$RG_PREFIX `$SearchPattern`" `
+#                 --preview-window="70%:wrap" `
+#                 --bind 'ctrl-a:select-all' | Out-String
+
+#     if (-not [string]::IsNullOrEmpty($files)) {
+#         $filesArray = $files.Split("`0")
+#         # Use hx --vsplit to open the selected files in Helix
+#         $hxArgs = $filesArray -join ' '
+#         Start-Process "hx" "--vsplit $hxArgs"
+#     }
+# }
 
 
+# Set-Alias hxs Invoke-Hxs
 function FindFile
 {
   Get-ChildItem . -Recurse -Attributes !Directory | Invoke-Fzf | % { hx.exe  $_ }
