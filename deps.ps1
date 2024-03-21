@@ -18,9 +18,12 @@ Update-Help -Force
 Write-Host "Installing Package Providers..." -ForegroundColor "Yellow"
 Get-PackageProvider NuGet -Force | Out-Null
 
+winget install junegunn.fzf --silent --accept-package-agreements
+winget install Microsoft.PowerToys -s winget
 
 ### Install PowerShell Modules
 Write-Host "Installing PowerShell Modules..." -ForegroundColor "Yellow"
+winget install JanDeDobbeleer.OhMyPosh -s winget
 Install-Module Posh-Git -Scope CurrentUser -Force
 Install-Module PSWindowsUpdate -Scope CurrentUser -Force
 #Install-Module -Name PSGitDotfiles -force
@@ -33,7 +36,7 @@ Install-Module PSEverything
 
 
 # system and cli
-#winget install Microsoft.WebPICmd                        --silent --accept-package-agreements
+#winget install Microsoft.WebPICmd                        --silent --accept-package-aaaaaaaaaa
 winget install Git.Git                                   --silent --accept-package-agreements --override "/VerySilent /NoRestart /o:PathOption=CmdTools /Components=""icons,assoc,assoc_sh,gitlfs"""
 #winget install OpenJS.NodeJS                             --silent --accept-package-agreements
 winget install Python.Python.3                           --silent --accept-package-agreements
@@ -46,11 +49,9 @@ winget install codesector.teracopy --silent --accept-package-agreements
 #winget install Google.Chrome                             --silent --accept-package-agreements
 #winget install Mozilla.Firefox                           --silent --accept-package-agreements
 #winget install Opera.Opera                               --silent --accept-package-agreements
-winget install 	Brave.Brave.Beta			  --silent --accept-package-agreements
+winget install Brave.brave.beta				  --silent --accept-package-agreements
 Write-Host -ForegroundColor Yellow "🌋 Force reinstall of VS-Code to ensure Path and Shell integration"
 winget install --force Microsoft.VisualStudioCode --override '/VERYSILENT /SP- /MERGETASKS="!runcode,!desktopicon,addcontextmenufiles,addcontextmenufolders,associatewithfiles,addtopath"'
-
-
 
 # dev tools and frameworks
 winget install Microsoft.PowerShell                      --silent --accept-package-agreements
@@ -67,6 +68,7 @@ winget install Microsoft.PowerShell                      --silent --accept-packa
 #winget install Microsoft.ServiceFabricExplorer           --silent --accept-package-agreements
 winget install  Helix.Helix				  --silent --accept-package-agreements
 
+winget install Gyan.FFmpeg    --silent --accept-package-agreements 
 winget install qBittorrent.qBittorrent			  --silent --accept-package-agreements
 winget install voidtools.Everything.Alpha		          --silent --accept-package-agreements
 winget install MKVToolNix				--silent --accept-package-agreements
