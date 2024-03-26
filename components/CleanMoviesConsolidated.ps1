@@ -71,8 +71,8 @@ function MergeToMKV {
 function ProcessMkVFiles($path) {
 	$begin_time = get-date -format "yyyy-MM-dd HH:mm:ss"
 	
-	$mkvprop = mkvpropedit.exe
-	$ffprobe = ffprobe.exe
+	$mkvprop = "mkvpropedit.exe"
+	$ffprobe = "ffprobe.exe"
 	
 	$MKVS = Get-ChildItem -path $path -Filter *.mkv 
 	mkdir $path\ffmpegout -f > null
@@ -87,8 +87,8 @@ function ProcessMkVFiles($path) {
 		$filename = [System.IO.Path]::GetFileNameWithoutExtension($file)
 		Write-Host "writing title for $filename *****"
 		$parm = @($file, "-e", "info", "-s", "title=$filename", "-q")
-		& $mkvprop $parm
-		$audioInfo = & $ffprobe -v error -select_streams a:0 -show_entries stream=channels -of default=noprint_wrappers=1:nokey=1 $file.FullName
+		mkvpropedit $parm
+		$audioInfo = ffprobe -v error -select_streams a:0 -show_entries stream=channels -of default=noprint_wrappers=1:nokey=1 $file.FullName
 		#do the downmixes
 		switch ($audioInfo) {
 			{ "2", "1" -eq $_ } {
@@ -100,7 +100,7 @@ function ProcessMkVFiles($path) {
 	
 				Write-Host "Mixing down ($audioInfo) to Stereo $filename ($length) temp.mkv"
 				ffmpeg -v quiet -stats -y -i $file -map 0:v -c:v copy -map 0:a:0? -c:a:0 copy -map 0:a:0? -c:a:1 aac -ac 2 -filter:a:1 "loudnorm" -ar:a:1 48000 -b:a:1 192k -metadata:s:a:1 title="Eng 2.0 Stereo" -metadata:s:a:1 language=eng -map 0:a:1? -c:a:2 copy -map 0:a:2? -c:a:3 copy -map 0:a:3? -c:a:4 copy -map 0:a:4? -c:a:5 copy -map 0:a:5? -c:a:6 copy -map 0:a:6? -c:a:7 copy -map 0:s? -c:s copy "$path/ffmpegOut/$filename temp.mkv"
-				Write-Host "Compresed Stereo building $filename.mkv($length)"
+				Write-Host "Compressing Stereo $filename.mkv($length)"
 				ffmpeg -v quiet -stats -y -i "$path/ffmpegOut/$filename temp.mkv" -map 0:v -c:v copy -map 0:a:0? -c:a:0 copy -map 0:a:0? -c:a:1 aac -ac 2 -filter:a:1 "acompressor=ratio=5,loudnorm" -ar:a:1 48000 -b:a:1 192k -metadata:s:a:1 title="DRC Eng 2.0 Stereo" -metadata:s:a:1 language=eng -map 0:a:1? -c:a:2 copy -map 0:a:2? -c:a:3 copy -map 0:a:3? -c:a:4 copy -map 0:a:4? -c:a:5 copy -map 0:a:5? -c:a:6 copy -map 0:a:6? -c:a:7 copy -map 0:s? -c:s copy "$path/ffmpegOut/$filename.mkv"
 				Remove-Item "$path/ffmpegOut/$filename temp.mkv"
 			}
@@ -165,8 +165,8 @@ if (-not (Get-Command ffprobe.exe -ErrorAction SilentlyContinue)) {
 
 
 
+$downloadFolder= $env:UserProfile + "\Downloads\Complete\movies"
 
-
-MergeToMKV -path "C:\Users\resto\Downloads\DownloadsComplete\movies" -outputPath "C:\Users\resto\Downloads\DownloadsComplete\movies\Output" 
-ProcessMkVFiles -path "C:\Users\resto\Downloads\DownloadsComplete\movies\Output"
-SortAndMoveMKVS -path "C:\Users\resto\Downloads\DownloadsComplete\movies\Output\ffmpegOut"
+MergeToMKV -path $downloadFolder -outputPath "$downloadFolder\Output" 
+ProcessMkVFiles -path "$downloadFolder\Output"
+SortAndMoveMKVS -path "$downloadFolder\Output\ffmpegOut"
