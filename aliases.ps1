@@ -53,10 +53,10 @@ if (Get-Command curl.exe -ErrorAction SilentlyContinue | Test-Path) {
 }
 
 # fzfwith only directories
-Set-Alias -Name fdir -Value InvokeWithDir
+# Set-Alias -Name fdir -Value InvokeWithDir
 
 #fzf search with bat preview
-Set-Alias -Name fzfpr -Value fzfWithBatPreview
+# Set-Alias -Name fzfpr -Value fzfWithBatPreview
 
 # Create a new directory and enter it
 Set-Alias mkd CreateAndSet-Directory
@@ -81,10 +81,10 @@ Set-Alias unmute Set-SoundUnmute
 Set-Alias Sysupdate System-Update
 
 # Set GVim as default vim
-Set-Alias vim gvim
+# Set-Alias vim gvim
 
 # Set alias for findFile
-Set-Alias fe FindFile
+# Set-Alias fe FindFile
 
 #toggle between find files and diretories
-Set-Alias ff toggleFind
+# Set-Alias ff toggleFind

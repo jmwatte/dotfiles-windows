@@ -14,7 +14,7 @@ if (!(Verify-Elevated)) {
 Write-Host "Configuring System..." -ForegroundColor "Yellow"
 
 # Set Computer Name
-(Get-WmiObject Win32_ComputerSystem).Rename("CHOZO") | Out-Null
+(Get-WmiObject Win32_ComputerSystem).Rename("jmw") | Out-Null
 
 ## Set DisplayName for my account. Use only if you are not using a Microsoft Account
 #$myIdentity=[System.Security.Principal.WindowsIdentity]::GetCurrent()
