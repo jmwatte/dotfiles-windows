@@ -27,7 +27,7 @@ function MergeToMKV {
 	
 
 	# Get all subfolders
-	$folders = Get-ChildItem -Path $path -Directory -Recurse
+	$folders = Get-ChildItem -LiteralPath $path -Directory -Recurse | Where-Object { $_.DirectoryName -ne $outputPath }
 
 
 	foreach ($folder in $folders) {
@@ -71,10 +71,10 @@ function MergeToMKV {
 function ProcessMkVFiles($path) {
 	$begin_time = get-date -format "yyyy-MM-dd HH:mm:ss"
 	
-	$mkvprop = "mkvpropedit.exe"
-	$ffprobe = "ffprobe.exe"
+	#$mkvprop = "mkvpropedit.exe"
+	#$ffprobe = "ffprobe.exe"
 	
-	$MKVS = Get-ChildItem -path $path -Filter *.mkv 
+	$MKVS = Get-ChildItem -LiteralPath $path -Filter *.mkv 
 	mkdir $path\ffmpegout -f > null
 	$k = 1
 	$kk = $MKVS.count
@@ -96,13 +96,13 @@ function ProcessMkVFiles($path) {
 				ffmpeg -v quiet -stats -y -i $file -map 0:v -c:v copy -map 0:a:0? -c:a:0 copy -map 0:a:0? -c:a:1 aac -ac 2 -filter:a:1 "acompressor=ratio=5,loudnorm" -ar:a:1 48000 -b:a:1 192k -metadata:s:a:1 title="Eng 2.0 Stereo DRC" -metadata:s:a:1 language=eng -map 0:a:1? -c:a:2 copy -map 0:a:2? -c:a:3 copy -map 0:a:3? -c:a:4 copy -map 0:a:4? -c:a:5 copy -map 0:a:5? -c:a:6 copy -map 0:a:6? -c:a:7 copy -map 0:s? -c:s copy "$path/ffmpegOut/$filename.mkv"
 			}
 			{ "6", "8" -eq $_ } {
+				$tempfile = "$path\ffmpegOut\$filename.temp.mkv"
 	
-	
-				Write-Host "Mixing down ($audioInfo) to Stereo $filename ($length) temp.mkv"
-				ffmpeg -v quiet -stats -y -i $file -map 0:v -c:v copy -map 0:a:0? -c:a:0 copy -map 0:a:0? -c:a:1 aac -ac 2 -filter:a:1 "loudnorm" -ar:a:1 48000 -b:a:1 192k -metadata:s:a:1 title="Eng 2.0 Stereo" -metadata:s:a:1 language=eng -map 0:a:1? -c:a:2 copy -map 0:a:2? -c:a:3 copy -map 0:a:3? -c:a:4 copy -map 0:a:4? -c:a:5 copy -map 0:a:5? -c:a:6 copy -map 0:a:6? -c:a:7 copy -map 0:s? -c:s copy "$path/ffmpegOut/$filename temp.mkv"
+				Write-Host "Mixing down ($audioInfo) to Stereo $tempfile ($length)"
+				ffmpeg -v quiet -stats -y -i $file -map 0:v -c:v copy -map 0:a:0? -c:a:0 copy -map 0:a:0? -c:a:1 aac -ac 2 -filter:a:1 "loudnorm" -ar:a:1 48000 -b:a:1 192k -metadata:s:a:1 title="Eng 2.0 Stereo" -metadata:s:a:1 language=eng -map 0:a:1? -c:a:2 copy -map 0:a:2? -c:a:3 copy -map 0:a:3? -c:a:4 copy -map 0:a:4? -c:a:5 copy -map 0:a:5? -c:a:6 copy -map 0:a:6? -c:a:7 copy -map 0:s? -c:s copy $tempfile
 				Write-Host "Compressing Stereo $filename.mkv($length)"
-				ffmpeg -v quiet -stats -y -i "$path/ffmpegOut/$filename temp.mkv" -map 0:v -c:v copy -map 0:a:0? -c:a:0 copy -map 0:a:0? -c:a:1 aac -ac 2 -filter:a:1 "acompressor=ratio=5,loudnorm" -ar:a:1 48000 -b:a:1 192k -metadata:s:a:1 title="DRC Eng 2.0 Stereo" -metadata:s:a:1 language=eng -map 0:a:1? -c:a:2 copy -map 0:a:2? -c:a:3 copy -map 0:a:3? -c:a:4 copy -map 0:a:4? -c:a:5 copy -map 0:a:5? -c:a:6 copy -map 0:a:6? -c:a:7 copy -map 0:s? -c:s copy "$path/ffmpegOut/$filename.mkv"
-				Remove-Item "$path/ffmpegOut/$filename temp.mkv"
+				ffmpeg -v quiet -stats -y -i $tempfile -map 0:v -c:v copy -map 0:a:0? -c:a:0 copy -map 0:a:0? -c:a:1 aac -ac 2 -filter:a:1 "acompressor=ratio=5,loudnorm" -ar:a:1 48000 -b:a:1 192k -metadata:s:a:1 title="DRC Eng 2.0 Stereo" -metadata:s:a:1 language=eng -map 0:a:1? -c:a:2 copy -map 0:a:2? -c:a:3 copy -map 0:a:3? -c:a:4 copy -map 0:a:4? -c:a:5 copy -map 0:a:5? -c:a:6 copy -map 0:a:6? -c:a:7 copy -map 0:s? -c:s copy "$path/ffmpegOut/$filename.mkv"
+				Remove-Item $tempfile
 			}
 			Default { Write-Host -ForegroundColor Red "#####    $file : $audioInfo" }
 		}
@@ -128,7 +128,7 @@ function ProcessMkVFiles($path) {
 
 function SortAndMoveMKVS($path) {
 	# get all mkv files in the directory
-	$MKVS = Get-ChildItem -path $path -Filter *.mkv
+	$MKVS = Get-ChildItem -LiteralPath $path -Filter *.mkv
 	# loop through all the mkv files
 	foreach ($file in $MKVS) {
 		# get the number from the file name
@@ -136,11 +136,29 @@ function SortAndMoveMKVS($path) {
 		# check if the number is lower then 2010
 		if ($number -lt 2010) {
 			# move the file to the old directory
-			Move-Item $file.FullName D:\
+			$destination = "D:\$($file.Name)"
+			$fileBaseName = [System.IO.Path]::GetFileNameWithoutExtension($file.Name)
+			$fileExtension = [System.IO.Path]::GetExtension($file.Name)
+			$counter = 2
+			while (Test-Path $destination) {
+				$destination = "D:\$fileBaseName($counter)$fileExtension"
+				$counter++
+			}
+			Move-Item $file.FullName $destination
+			write-host "moved $file to $destination"
 		}
 		else {
 			# move the file to the new directory
-			Move-Item $file.FullName E:\
+			$destination = "E:\$($file.Name)"
+			$fileBaseName = [System.IO.Path]::GetFileNameWithoutExtension($file.Name)
+			$fileExtension = [System.IO.Path]::GetExtension($file.Name)
+			$counter = 2
+			while (Test-Path $destination) {
+				$destination = "E:\$fileBaseName($counter)$fileExtension"
+				$counter++
+			}
+			Move-Item $file.FullName $destination
+			write-host "moved $file to $destination"
 		}
 	}
 	
@@ -163,10 +181,14 @@ if (-not (Get-Command ffprobe.exe -ErrorAction SilentlyContinue)) {
 	return
 }
 
+# Check if ffmpeg.exe is available
+if (-not (Get-Command ffmpeg.exe -ErrorAction SilentlyContinue)) {
+	Write-Error "ffmpeg.exe is not found. Please install ffmpeg."
+	return
+}
 
+$downloadFolder = $env:UserProfile + "\Downloads\complete\movies"
 
-$downloadFolder= $env:UserProfile + "\Downloads\Complete\movies"
-
-MergeToMKV -path $downloadFolder -outputPath "$downloadFolder\Output" 
-ProcessMkVFiles -path "$downloadFolder\Output"
-SortAndMoveMKVS -path "$downloadFolder\Output\ffmpegOut"
+MergeToMKV -path $downloadFolder -outputPath "$downloadFolder\output" 
+ProcessMkVFiles -path "$downloadFolder\output"
+SortAndMoveMKVS -path "$downloadFolder\output\ffmpegOut"
