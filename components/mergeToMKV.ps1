@@ -52,4 +52,4 @@ function MergeToMKV {
 		
 	}
 }
-#MergeToMKV -path "C:\Users\resto\Downloads\DownloadsComplete\test" -outputPath "C:\Users\resto\Downloads\DownloadsComplete\test\Output" 
+#MergeToMKV -path "C:\Users\resto\Downloads\DownloadsComplete\movies" -outputPath "C:\Users\resto\Downloads\DownloadsComplete\movies\Output" 
