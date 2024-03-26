@@ -31,7 +31,7 @@ function MergeToMKV {
 
 
 	foreach ($folder in $folders) {
-		Write-Host "Processing folder: $($folder.Name)"
+		Write-Host -ForegroundColor Green "Processing folder: $($folder.Name)"
 		# Get the video and srt files
 		$videoFile = Get-ChildItem -LiteralPath $folder.FullName -File | Where-Object { $_.Extension -match "\.(avi|mp4|mkv)$" } | Select-Object -First 1
 		$srtFile = Get-ChildItem -LiteralPath $folder.FullName -File | Where-Object { $_.Extension -match "\.srt$" } | Select-Object -First 1	
@@ -42,11 +42,11 @@ function MergeToMKV {
 			$outputFile = Join-Path -Path $outputPath -ChildPath ("{0}.mkv" -f $videoFile.BaseName)
 			# Merge the video and srt files
 			& mkvmerge  -o $outputFile --default-track 0 --language 0:eng $videoFile.FullName $srtFile.FullName
-			write-host "merged $outputFile"
+			write-host -ForegroundColor Blue "merged $outputFile"
 		}
 		elseif ($videoFile) {
-			Write-Host "No srt file found for $($videoFile.Name)"
-			Write-Host "Copying video file to output folder: $($folder.Full)"
+			Write-Host -ForegroundColor Red "No srt file found for $($videoFile.Name)"
+			Write-Host -ForegroundColor Blue "Copying video file to output folder: $($folder.Full)"
 			# if the video file is mkv, we can just copy it to the output folder else make a mkv and copy it to the output folder
 			if ($videoFile.Extension -eq ".mkv") {
 				Copy-Item -Path $videoFile.FullName -Destination $outputPath
@@ -57,7 +57,7 @@ function MergeToMKV {
 			}
 		}
   else {
-			Write-Host "No video or srt file found in $($folder.FullName)"
+			Write-Host -ForegroundColor Red "No video or srt file found in $($folder.FullName)"
 		}
 		
 	}
