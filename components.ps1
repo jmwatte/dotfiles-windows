@@ -8,4 +8,5 @@ Push-Location (Join-Path (Split-Path -parent $profile) "components")
 . .\terminal_icons.ps1
 . .\git.ps1
 . .\SetUpModulesFromGit.ps1
+. .\strip-progress.ps1
 Pop-Location
