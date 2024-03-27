@@ -15,7 +15,8 @@ function Install-ModulesFromGit {
 		'https://github.com/jmwatte/TTyping.git',
 		'https://github.com/jmwatte/foxlines.git',
 		'https://github.com/jmwatte/fakewords.git',
-		'https://github.com/jmwatte/MKVHelpers.git'
+		'https://github.com/jmwatte/MKVHelpers.git',
+		'https://github.com/jmwatte/SimpleSpotiPlaylistMaker.git'
 
 		# Add more URLs as needed
 	)
@@ -40,4 +41,16 @@ function Install-ModulesFromGit {
 		}
 	}
 }
+# import the installed modules found in the -Destination folder 
+
+function Import-ModulesFromGit {
+	$modules = Get-ChildItem -Path "$env:USERPROFILE\Documents\PowerShell\Modules" -Directory
+	foreach ($module in $modules) {
+		Import-Module $module.FullName
+		Write-host "Imported module: $($module.Name)"
+	}
+}
+
+
 Install-ModulesFromGit
+Import-ModulesFromGit

@@ -7,5 +7,5 @@ Push-Location (Join-Path (Split-Path -parent $profile) "components")
 . .\fzf.ps1
 . .\terminal_icons.ps1
 . .\git.ps1
-
+. .\SetUpModulesFromGit.ps1
 Pop-Location
