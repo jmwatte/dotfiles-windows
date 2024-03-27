@@ -1,4 +1,9 @@
 function Install-ModulesFromGit {
+	# Check if Git is installed
+	if (!(Get-Command git -ErrorAction SilentlyContinue)) {
+		Write-Host "Git is not installed. Please install Git and try again."
+		return
+	}
 	# Hardcoded list of GitHub URLs
 	$gitUrlsOfModules = @(
 		'https://github.com/jmwatte/AudioAnalyses.git',
@@ -9,7 +14,8 @@ function Install-ModulesFromGit {
 		'https://github.com/jmwatte/PlaylistModule.git',
 		'https://github.com/jmwatte/TTyping.git',
 		'https://github.com/jmwatte/foxlines.git',
-		'https://github.com/jmwatte/fakewords.git'
+		'https://github.com/jmwatte/fakewords.git',
+		'https://github.com/jmwatte/MKVHelpers.git'
 
 		# Add more URLs as needed
 	)
