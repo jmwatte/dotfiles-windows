@@ -16,14 +16,14 @@ function Install-ModulesFromGit {
 
 	foreach ($url in $gitUrlsOfModules) {
 		# Extract the module name from the URL
-		$moduleName = $url.Split('/')[-1]
+		$moduleName = $url.Split('/')[-1].Replace('.git', '')
 
 		# Check if the module is already installed
 		if (!(Get-Module -ListAvailable -Name $moduleName)) {
 			# Clone the repository to a temporary directory
 			$tempDir = [System.IO.Path]::GetTempFileName()
 			Remove-Item $tempDir
-			Write-Host "Cloning $moduleName from $url to $tempDir"
+			#Write-Host "Cloning $moduleName from $url to $tempDir"
 			git clone $url $tempDir
 
 			# Copy the cloned repository to the PSModulePath
