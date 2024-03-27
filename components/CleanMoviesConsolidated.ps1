@@ -75,7 +75,7 @@ function ProcessMkVFiles($path) {
 	#$ffprobe = "ffprobe.exe"
 	
 	$MKVS = Get-ChildItem -LiteralPath $path -Filter *.mkv 
-	mkdir $path\ffmpegout -f > null
+	mkdir $path\ffmpegout -f > $null
 	$k = 1
 	$kk = $MKVS.count
 	foreach ($file in $MKVS) {
