@@ -164,31 +164,34 @@ function SortAndMoveMKVS($path) {
 	
 	
 }
-	
-# Check if mkvmerge is available
-if (-not (Get-Command mkvmerge -ErrorAction SilentlyContinue)) {
-	Write-Error "mkvmerge is not found. Please install MKVToolNix."
-	return
-}
-# Check if mkvpropedit.exe is available
-if (-not (Get-Command mkvpropedit.exe -ErrorAction SilentlyContinue)) {
-	Write-Error "mkvpropedit.exe is not found. Please install MKVToolNix."
-	return
-}
-# Check if ffprobe.exe is available
-if (-not (Get-Command ffprobe.exe -ErrorAction SilentlyContinue)) {
-	Write-Error "ffprobe.exe is not found. Please install ffmpeg."
-	return
-}
+function Move-Videos {	
+	# Check if mkvmerge is available
+	if (-not (Get-Command mkvmerge -ErrorAction SilentlyContinue)) {
+		Write-Error "mkvmerge is not found. Please install MKVToolNix."
+		return
+	}
+	# Check if mkvpropedit.exe is available
+	if (-not (Get-Command mkvpropedit.exe -ErrorAction SilentlyContinue)) {
+		Write-Error "mkvpropedit.exe is not found. Please install MKVToolNix."
+		return
+	}
+	# Check if ffprobe.exe is available
+	if (-not (Get-Command ffprobe.exe -ErrorAction SilentlyContinue)) {
+		Write-Error "ffprobe.exe is not found. Please install ffmpeg."
+		return
+	}
 
-# Check if ffmpeg.exe is available
-if (-not (Get-Command ffmpeg.exe -ErrorAction SilentlyContinue)) {
-	Write-Error "ffmpeg.exe is not found. Please install ffmpeg."
-	return
+	# Check if ffmpeg.exe is available
+	if (-not (Get-Command ffmpeg.exe -ErrorAction SilentlyContinue)) {
+		Write-Error "ffmpeg.exe is not found. Please install ffmpeg."
+		return
+	}
+
+
+
+	$downloadFolder = $env:UserProfile + "\Downloads\complete\movies"
+
+	MergeToMKV -path $downloadFolder -outputPath "$downloadFolder\output" 
+	ProcessMkVFiles -path "$downloadFolder\output"
+	SortAndMoveMKVS -path "$downloadFolder\output\ffmpegOut"
 }
-
-$downloadFolder = $env:UserProfile + "\Downloads\complete\movies"
-
-MergeToMKV -path $downloadFolder -outputPath "$downloadFolder\output" 
-ProcessMkVFiles -path "$downloadFolder\output"
-SortAndMoveMKVS -path "$downloadFolder\output\ffmpegOut"
