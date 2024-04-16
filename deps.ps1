@@ -79,7 +79,7 @@ winget install sharkdp.fd
 winget install  Nilesoft.Shell --silent --accept-package-agreements
 winget install XBMCFoundation.Kodi --silent --accept-package-agreements
 winget install Gyan.FFmpeg --silent --accept-package-agreements
-
+winget install glazeWm --silent --accept-package-agreements
 $FontName = 'meslo'
 $NerdFontsURI = 'https://github.com/ryanoasis/nerd-fonts/releases'
 
